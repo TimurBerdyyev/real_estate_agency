@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
-
+    
 
 class Flat(models.Model):
     owner = models.CharField('ФИО владельца', max_length=200)
@@ -64,3 +64,14 @@ class Сomplaint(models.Model):
 
     def __str__(self):
         return f'Жалоба от {self.user.username} на квартиру {self.flat.address}'
+    
+
+class Owner(models.Model):
+    full_name = models.CharField('ФИО', max_length=200)
+    phone_nuber = models.CharField('номер телефона', max_length=20)
+    pure_phone_number = PhoneNumberField('нормализованый номер ', blank=True, null=True, region='RU')
+    flats = models.ManyToManyField('Flat', related_name='owners', blank=True)
+    def __str__(self):
+        return f'{self.full_name}'
+    
+
