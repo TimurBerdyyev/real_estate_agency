@@ -6,7 +6,6 @@
 
 - Скачайте код
 - Установите зависимости командой `pip install -r requirements.txt`
-- После установите Django версии 2.2.24 `pip install Django==2.2.24`
 - Создайте файл базы данных и сразу примените все миграции командой `python3 manage.py migrate`
 - Запустите сервер командой `python3 manage.py runserver`
 
