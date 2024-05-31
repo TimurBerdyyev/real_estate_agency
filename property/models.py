@@ -2,12 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
-    
+
 
 class Flat(models.Model):
-    owner = models.CharField('ФИО владельца', max_length=200)
-    owners_phonenumber = models.CharField('Номер владельца', max_length=20)
-    owner_pure_phone = PhoneNumberField('нормализованый номер', blank=True, null=True, region='RU')
     new_building = models.BooleanField('Новостройка', null=True, blank=True, default=False)
     created_at = models.DateTimeField(
         'Когда создано объявление',
@@ -43,7 +40,7 @@ class Flat(models.Model):
         blank=True,
         db_index=True)
 
-    has_balcony = models.NullBooleanField('Наличие балкона', db_index=True, null=True)
+    has_balcony = models.BooleanField('Наличие балкона', db_index=True, null=True)
     active = models.BooleanField('Активно-ли объявление', db_index=True)
     construction_year = models.IntegerField(
         'Год постройки здания',
@@ -51,15 +48,15 @@ class Flat(models.Model):
         blank=True,
         db_index=True)
     
-    liked = models.ManyToManyField(User, verbose_name='Лайки', blank=True)
+    liked = models.ForeignKey(User, verbose_name='Лайки', blank=True,null=True, related_name='liked_flats', on_delete=models.SET_NULL)
 
     def __str__(self):
         return f'{self.town}, {self.address} ({self.price}р.)'
     
 
 class Сomplaint(models.Model):
-    user = models.ForeignKey(User, verbose_name='Кто жаловался', on_delete=models.CASCADE)
-    flat = models.ForeignKey(Flat, verbose_name='кватрира на которую жаловались', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Кто жаловался', on_delete=models.CASCADE, related_name='complaints')
+    flat = models.ForeignKey(Flat, verbose_name='кватрира на которую жаловались', on_delete=models.CASCADE, related_name='complaints')
     text = models.TextField('текст жалобы')
 
     def __str__(self):
@@ -71,7 +68,8 @@ class Owner(models.Model):
     phone_nuber = models.CharField('номер телефона', max_length=20)
     pure_phone_number = PhoneNumberField('нормализованый номер ', blank=True, null=True, region='RU')
     flats = models.ManyToManyField('Flat', related_name='owners', blank=True)
+
     def __str__(self):
-        return f'{self.full_name}'
+        return self.full_name
     
 
